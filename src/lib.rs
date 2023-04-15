@@ -24,6 +24,8 @@ use core::ops::{
 };
 use core::str::FromStr;
 
+use const_default::ConstDefault;
+
 #[cfg(not(feature = "std"))]
 use num_traits::float::FloatCore as Float;
 #[cfg(feature = "std")]
@@ -67,7 +69,7 @@ const CANONICAL_ZERO_BITS: u64 = 0x0u64;
 /// s.insert(OrderedFloat(NAN));
 /// assert!(s.contains(&OrderedFloat(NAN)));
 /// ```
-#[derive(Debug, Default, Clone, Copy)]
+#[derive(ConstDefault, Debug, Default, Clone, Copy)]
 #[repr(transparent)]
 pub struct OrderedFloat<T>(pub T);
 
@@ -936,7 +938,7 @@ impl<T: Float + Num> Num for OrderedFloat<T> {
 /// // This will panic:
 /// let c = a + b;
 /// ```
-#[derive(PartialOrd, PartialEq, Debug, Default, Clone, Copy)]
+#[derive(ConstDefault, PartialOrd, PartialEq, Debug, Default, Clone, Copy)]
 #[repr(transparent)]
 pub struct NotNan<T>(T);
 
@@ -1335,7 +1337,7 @@ impl<T: Float> Neg for &NotNan<T> {
 }
 
 /// An error indicating an attempt to construct NotNan from a NaN
-#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+#[derive(ConstDefault, Copy, Clone, PartialEq, Eq, Debug)]
 pub struct FloatIsNan;
 
 #[cfg(feature = "std")]
@@ -2015,6 +2017,7 @@ mod impl_schemars {
 
 #[cfg(feature = "rand")]
 mod impl_rand {
+    use super::ConstDefault;
     use super::{NotNan, OrderedFloat};
     use rand::distributions::uniform::*;
     use rand::distributions::{Distribution, Open01, OpenClosed01, Standard};
@@ -2045,7 +2048,7 @@ mod impl_rand {
     impl_distribution! { Open01, f32, f64 }
     impl_distribution! { OpenClosed01, f32, f64 }
 
-    #[derive(Clone, Copy, Debug, PartialEq)]
+    #[derive(ConstDefault, Clone, Copy, Debug, PartialEq)]
     #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
     pub struct UniformNotNan<T>(UniformFloat<T>);
     impl SampleUniform for NotNan<f32> {
@@ -2055,7 +2058,7 @@ mod impl_rand {
         type Sampler = UniformNotNan<f64>;
     }
 
-    #[derive(Clone, Copy, Debug, PartialEq)]
+    #[derive(ConstDefault, Clone, Copy, Debug, PartialEq)]
     #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
     pub struct UniformOrdered<T>(UniformFloat<T>);
     impl SampleUniform for OrderedFloat<f32> {
